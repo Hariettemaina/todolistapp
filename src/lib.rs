@@ -4,7 +4,7 @@ use dotenvy::dotenv;
 use std::env;
 
 
-pub use todo::create_todo;
+
 pub mod todo;
 pub mod models;
 pub mod schema;
