@@ -1,43 +1,25 @@
-//use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-
+use std::error::Error;
 use actix_web::{delete, get, post, put, web, App, HttpResponse, HttpServer, Responder};
-use diesel::{result::Error};
-use crate::{todolist::models::{Todo,NewTodo},};
-use serde_json::json;
+use diesel::prelude::*;
+use crate::models::{Todo,NewTodo};
+use diesel::pg::PgConnection;
+use dotenvy::dotenv;
+use std::env;
+
+pub mod todo;
+pub mod models;
+pub mod schema;
 
 
-#[get("/todo")]
-async fn find_all() -> Result<HttpResponse, Error> {
-    use crate::schema::todo::dsl::todo;
-    let todo = Todo::find()?;
-    Ok(HttpResponse::Ok().json(todo))
-}
-#[get("/todo/{id}")]
-async fn find(id: web::Path<i32>) -> Result<HttpResponse, Error> {
-    let  = Todo:find(id.into_inner())?;
-    Ok(HttpResponse::Ok().json(employee))
+pub fn establish_connection() -> PgConnection {
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    PgConnection::establish(&database_url)
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-#[post("/employees")]
-async fn create(employee: web::Json<Todo>) -> Result<HttpResponse, Error> {
-    let employee =Todo::create(employee.into_inner())?;
-    Ok(HttpResponse::Ok().json(employee))
-}
 
-#[put("/employees/{id}")]
-fn update(
-    id: web::Path<i32>,
-    employee: web::Json<Todo>,
-) -> Result<HttpResponse, Error> {
-    let employee = Todo::update(id.into_inner(), employee.into_inner())?;
-    Ok(HttpResponse::Ok().json(employee))
-}
-
-#[delete("/employees/{id}")]
-async fn delete(id: web::Path<i32>) -> Result<HttpResponse, Error> {
-    let deleted_employee = Todo::delete(id.into_inner())?;
-    Ok(HttpResponse::Ok().json(json!({ "deleted": deleted_employee })))
-}
 
 
 
@@ -46,12 +28,11 @@ async fn delete(id: web::Path<i32>) -> Result<HttpResponse, Error> {
 
 
 #[actix_web::main]
+
+
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
     })
     .bind(("127.0.0.1", 8080))?
     .run()

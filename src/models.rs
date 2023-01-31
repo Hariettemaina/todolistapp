@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use chrono::NaiveDate;
 use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
@@ -28,7 +30,7 @@ impl Todo {
         contents: String,
         completed: bool,
         date_created: NaiveDate,
-    ) -> Result<Todo, diesel::result::Error> {
+    ) -> Result<Todo, Box<dyn Error>> {
         let new_todo = NewTodo {
             title,
             contents,
@@ -50,7 +52,7 @@ impl Todo {
         contents: Option<String>,
         completed: Option<bool>,
         date_created: Option<NaiveDate>,
-    ) -> Result<Todo, diesel::result::Error> {
+    ) -> Result<Todo, Box<dyn Error>> {
         let connection = & mut establish_connection();
 
         let todo = diesel::update(todo::table.find(self.id))
@@ -65,7 +67,7 @@ impl Todo {
         Ok(todo)
     }
 
-    pub fn delete(self) -> Result<usize, diesel::result::Error> {
+    pub fn delete(self) -> Result<usize, Box<dyn Error>>{
         let connection = &mut establish_connection();
         let num_deleted = diesel::delete(todo::table.find(self.id)).execute(connection)?;
 
@@ -74,7 +76,7 @@ impl Todo {
 }
 
 impl NewTodo {
-    pub fn find(id: i32) -> Result<Todo, diesel::result::Error> {
+    pub fn find(id: i32) -> Result<Todo, Box<dyn Error>> {
         let connection = &mut establish_connection();
         let todo = todo::table.find(id).first::<Todo>(connection)?;
 
