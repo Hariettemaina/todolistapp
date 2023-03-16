@@ -3,7 +3,7 @@ use std::error::Error;
 use chrono::NaiveDate;
 use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
-use crate::{schema::todo, establish_connection}; //establish_connection};
+use crate::{schema::todo, establish_connection}; 
 #[derive(Queryable,Serialize,Deserialize)]
 pub struct Todo {
     pub id: i32,
@@ -14,7 +14,7 @@ pub struct Todo {
 }
 
 
-#[derive(Insertable)]
+#[derive(Insertable,Serialize,Deserialize)]
 #[table_name="todo"]
 pub struct NewTodo {
     pub title: String,
@@ -25,7 +25,7 @@ pub struct NewTodo {
 
 
 impl Todo {
-    pub fn create(
+    pub fn add_todo(
         title: String,
         contents: String,
         completed: bool,
