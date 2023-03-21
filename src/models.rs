@@ -15,7 +15,7 @@ pub struct Todo {
 
 
 #[derive(Insertable,Serialize,Deserialize)]
-#[table_name="todo"]
+#[diesel(table_name = todo)]
 pub struct NewTodo {
     pub title: String,
     pub contents : String,
